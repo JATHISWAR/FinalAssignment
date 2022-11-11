@@ -3,17 +3,16 @@ package com.miniproject.bookstore.controller;
 
 import com.miniproject.bookstore.entity.Book;
 import com.miniproject.bookstore.service.BookService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.validation.Valid;
-import java.util.List;
+
 
 @Controller
 public class BooksController {
@@ -22,40 +21,41 @@ public class BooksController {
     private BookService bookService;
 
     @GetMapping("/book")
-    public String index(Model model) {
+    public ResponseEntity<String> index(Model model) {
         model.addAttribute("books", bookService.findAll());
-        return "booklist";
+        return new ResponseEntity<>(model.toString(), HttpStatus.OK);
     }
 
     @GetMapping("/book/create")
-    public String create(Model model) {
+    public ResponseEntity<String> create(Model model) {
         model.addAttribute("book", new Book());
-        return "form";
+        return new ResponseEntity<>(model.toString(), HttpStatus.OK);
     }
 
     @GetMapping("/book/{id}/edit")
-    public String edit(@PathVariable int id, Model model) {
+    public ResponseEntity<String> edit(@PathVariable int id, Model model) {
         model.addAttribute("book", bookService.findOne(id));
-        return "form";
+        return new ResponseEntity<String>(model.toString(), HttpStatus.OK);
     }
 
-    @PostMapping("/book/save")
-    public String save(@Valid Book book, BindingResult result, RedirectAttributes redirect) {
-        if (result.hasErrors()) {
-            return  result.getAllErrors().toString();
-        }
-        else {
+    @RequestMapping(value = "/book/save", method = RequestMethod.POST)
+    public ResponseEntity<String> save(@RequestBody Book book) {
             bookService.save(book);
-            redirect.addFlashAttribute("success", "Saved Book Details successfully!");
-            return "redirect:/book";
-        }
+           return  ResponseEntity.status(HttpStatus.OK).body(book.toString());
     }
 
     @GetMapping("/book/{id}/delete")
-    public String delete(@PathVariable int id, RedirectAttributes redirect) {
+    public ResponseEntity<String> delete(@PathVariable int id, RedirectAttributes redirect) {
         bookService.delete(id);
-        redirect.addFlashAttribute("success", "Deleted Book Details successfully!");
-        return "redirect:/book";
+        return ResponseEntity.status(HttpStatus.OK).body("Item deleted");
+    }
+
+
+    @GetMapping("/books/search")
+    public ResponseEntity<String> search(@RequestParam("str") String str,Model model){
+       model.addAttribute("books",bookService.search(str));
+
+        return new ResponseEntity<String>(model.toString(), HttpStatus.OK);
     }
 
 

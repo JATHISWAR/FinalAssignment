@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -34,4 +35,8 @@ public class BookServiceImpl implements BookService {
     public void delete(int id) {
         booksRepository.deleteById(id);
     }
+
+    @Override
+    public List<Book> search(String s) {
+        return booksRepository.findByNameContaining(s);   }
 }

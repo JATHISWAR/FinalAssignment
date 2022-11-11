@@ -2,6 +2,8 @@ package com.miniproject.bookstore.service;
 
 import com.miniproject.bookstore.entity.Book;
 
+import java.util.List;
+
 public interface BookService {
     Iterable<Book> findAll();
 
@@ -10,6 +12,8 @@ public interface BookService {
     void save(Book saveBook);
 
     void delete(int id);
+
+    List<Book> search(String s);
 
 
 
